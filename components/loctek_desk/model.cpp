@@ -124,25 +124,37 @@ Layout lay_out(int w, int h, const Have &have, int gap, int min_key) {
   keep_wide_enough();
   int rh = h;
   if (!wide) {
-    while (nrows > 0) {
-      rh = (h - nrows * gap) / (nrows + 2);
-      if (rh >= min_key) break;
-      --nrows;
-    }
-    // A tile wider than high that the stacked rule leaves without a row: the wide rule, with the first group.
-    if (nrows == 0 && offered > 0 && ng > 0 && w > h) {
-      wide = true;
-      row_w = (w - gap) / 2;
-      rows[0] = groups[0];
-      nrows = 1;
-      keep_wide_enough();
-      rh = h;
+    // Roomy rows leave the block the height of two rows; tight rows are min_key high and leave it at least one.
+    int roomy = nrows, tight = nrows;
+    while (roomy > 0 && (h - roomy * gap) / (roomy + 2) < min_key) --roomy;
+    while (tight > 0 && h - tight * (min_key + gap) < min_key) --tight;
+    if (roomy > 0) {
+      // Tight only where it gains a row.
+      nrows = tight > roomy ? tight : roomy;
+      rh = tight > roomy ? min_key : (h - roomy * gap) / (roomy + 2);
+    } else {
+      // No roomy row. A tile wider than high: the wide rule, with the first group.
+      const Row first = rows[0];
+      const int stacked = nrows;
+      nrows = 0;
+      if (offered > 0 && ng > 0 && w > h && h >= min_key) {
+        row_w = (w - gap) / 2;
+        rows[0] = groups[0];
+        nrows = 1;
+        keep_wide_enough();
+        wide = nrows > 0;
+        rh = h;
+      }
+      // Else tight rows under the block, where one fits.
+      if (!wide) {
+        row_w = w;
+        rows[0] = first;
+        nrows = tight < stacked ? tight : stacked;
+        rh = min_key;
+      }
     }
   }
-  if (wide) {
-    if (nrows > 1) nrows = 1;
-    if (h < min_key) nrows = 0;
-  }
+  if (wide && h < min_key) nrows = 0;
   if (nrows == 0) return l;
   int x0, y0;
   if (wide) {

@@ -71,9 +71,11 @@ struct Have {
 // The height block and the keys' places inside w x h. min_key is ui::mm(7).
 // Groups {SIT, STAND}, {UP, STOP, DOWN}, {PRESET_1, PRESET_2}, {LOCK, ALARM}; a group without a key does not exist.
 // The size offers rows: 1x1 none, 2x1 one, 1x2 two, 2x2 three (groups 3 and 4 then share one row if all four exist).
-// 2x1: block left, row right, side by side. Else the block on top and the rows under it; a size that offers rows but
-// gets none that way and is wider than high (the CYD's 2x2) takes the 2x1 rule with the first group. A row too low or
-// whose keys would be narrower than min_key is not drawn; with no row the block is the whole tile.
+// 2x1: block left, row right, side by side. Else the block on top and the rows under it. Rows are roomy (the block
+// as high as two of them) unless tight rows (min_key high, the block at least that) gain a row: a Guition 4-inch at
+// 2x2 gets its third row that way. A size that offers rows but has room for no roomy one takes the 2x1 rule with the
+// first group when it is wider than high (the CYD's 2x2), else tight rows. A row whose keys would be narrower than
+// min_key is not drawn; with no row the block is the whole tile.
 Layout lay_out(int w, int h, const Have &have, int gap, int min_key);
 // The key at a point. NONE between keys and on the block.
 Key hit(const Layout &l, int x, int y);

@@ -139,9 +139,23 @@ static void test_layout_flat_falls_back_to_wide() {      // the CYD's 2x2
   assert(l.block.x == 0 && l.block.w == 147 && l.block.h == 110 && find(l, Key::SIT)->r.x == 155);
   inside_and_apart(l, 302, 110, 39);
 }
-static void test_layout_flat_too_narrow() {              // the CYD's 1x2: nothing fits, the tap of a small tile works
+static void test_layout_flat_narrow_gets_a_tight_row() {  // the CYD's 1x2: no room beside the height, one tight row under it
   const Layout l = lay_out(148, 110, all(1, 2), 8, 39);
-  assert(l.count == 0 && l.block.w == 148 && l.block.h == 110);
+  assert(l.count == 2 && find(l, Key::SIT) && find(l, Key::STAND));
+  assert(l.block.w == 148 && l.block.h == 63 && find(l, Key::SIT)->r.y == 71 && find(l, Key::SIT)->r.h == 39);
+  inside_and_apart(l, 148, 110, 39);
+}
+static void test_layout_tight_rows_gain_a_row() {          // a Guition 4-inch at 2x2: three rows only when they are tight
+  const Layout l = lay_out(446, 217, all(2, 2), 8, 47);
+  assert(l.count == 9);
+  assert(l.block.h == 52 && find(l, Key::SIT)->r.h == 47);
+  const Rect a = find(l, Key::ALARM)->r;
+  assert(a.y + a.h == 217);
+  inside_and_apart(l, 446, 217, 47);
+}
+static void test_layout_roomy_rows_stay_roomy() {          // tight rows only where they gain a row
+  const Layout l = lay_out(408, 408, all(2, 2), 8, 40);
+  assert(find(l, Key::SIT)->r.h == 76 && l.block.h == 156);
 }
 static void test_hit() {
   const Layout l = lay_out(408, 408, all(2, 2), 8, 40);
@@ -208,7 +222,9 @@ int main() {
   test_layout_manual_off_only();
   test_layout_smallest_glass();
   test_layout_flat_falls_back_to_wide();
-  test_layout_flat_too_narrow();
+  test_layout_flat_narrow_gets_a_tight_row();
+  test_layout_tight_rows_gain_a_row();
+  test_layout_roomy_rows_stay_roomy();
   test_hit();
   test_services();
   test_small_tap();

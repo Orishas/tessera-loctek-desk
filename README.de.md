@@ -41,9 +41,10 @@ Die Tasten kommen in vier Gruppen, in dieser Reihenfolge: Sitzen und Stehen; Hoc
 und Alarm. Eine Gruppe ohne Taste gibt es nicht. Jede Größe füllt ihre Reihen mit den Gruppen in dieser Reihenfolge,
 und Gruppen, die keine Reihe finden, werden nicht gezeichnet.
 
-Eine Kachel, die breiter als hoch ist, etwa 2 x 2 oder 1 x 2 auf einem kleinen Screen wie dem CYD, zeigt links die
-Höhe und rechts eine Reihe Tasten, wenn unter der Höhe keine Reihe passt. Wo gar keine Tasten passen, zeigt die Kachel
-nur die Höhe, und ein Tippen schickt den Tisch ans andere Ende, wie bei 1 x 1.
+Wo nicht alle Reihen passen, werden die Tasten niedriger und die Höhe kleiner, bevor eine Reihe wegfällt: Eine Kachel
+in 2 x 2 auf einem 4"-Screen zeigt so ihre drei Reihen. Auf einem kleinen Screen wie dem CYD zeigt eine Kachel, die
+breiter als hoch ist, links die Höhe und rechts eine Reihe Tasten, wenn unter der Höhe keine Reihe passt. Wo gar keine
+Tasten passen, zeigt die Kachel nur die Höhe, und ein Tippen schickt den Tisch ans andere Ende, wie bei 1 x 1.
 
 Eine Taste wird nie gequetscht: Eine Reihe, die auf einen kleinen Screen nicht passt, entfällt ganz.
 

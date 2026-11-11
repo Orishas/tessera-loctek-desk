@@ -39,9 +39,10 @@ The keys come in four groups, in this order: Sit and Stand; Up, Stop and Down; 1
 without a key does not exist. Each size fills its rows with the groups in that order, and the groups that find no
 row are not drawn.
 
-A tile that is wider than high, such as a 2 x 2 or 1 x 2 tile on a small screen like the CYD, shows the height on
-the left and one row of keys on the right when no row fits under the height. Where no keys fit at all, the tile shows
-the height alone, and a tap sends the desk to the other end, as on 1 x 1.
+Where the rows do not all fit, the keys become lower and the height smaller before a row is left out: a 2 x 2 tile
+on a 4" screen shows its three rows that way. On a small screen like the CYD, a tile that is wider than high shows
+the height on the left and one row of keys on the right when no row fits under the height. Where no keys fit at all,
+the tile shows the height alone, and a tap sends the desk to the other end, as on 1 x 1.
 
 A key is never squeezed: a row that does not fit a small screen is left out as a whole.
 
