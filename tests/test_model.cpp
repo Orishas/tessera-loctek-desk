@@ -8,6 +8,8 @@
 
 using namespace esphome::loctek_desk;
 
+void test_icon();  // tests/test_icon.cpp
+
 static void test_usable() {
   for (const char *s : {"open", "closed", "73.5", "0"}) assert(usable(s));
   for (const char *s : {"unavailable", "unknown", ""}) assert(!usable(s));
@@ -212,6 +214,7 @@ int main() {
   test_small_tap();
   test_may_send();
   test_looks();
+  test_icon();
   std::puts("ok");
   return 0;
 }

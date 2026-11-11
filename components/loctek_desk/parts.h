@@ -25,4 +25,14 @@ inline void show(lv_obj_t *o, bool on) {
   else lv_obj_add_flag(o, LV_OBJ_FLAG_HIDDEN);
 }
 
+// A colour of the part's own style (an image's recolour), set only when it is another one.
+inline void set_style_color(lv_obj_t *o, lv_style_prop_t prop, lv_color_t color) {
+  if (!o) return;
+  lv_style_value_t was;
+  if (lv_obj_get_local_style_prop(o, prop, &was, 0) == LV_STYLE_RES_FOUND && lv_color_eq(was.color, color)) return;
+  lv_style_value_t now;
+  now.color = color;
+  lv_obj_set_local_style_prop(o, prop, now, 0);
+}
+
 }  // namespace esphome::loctek_desk

@@ -11,7 +11,7 @@ topics: [home]
 requires:
   esphome: 2026.6.2
 boards: any
-flash_kb: 20
+flash_kb: 28   # the code, and the two masks of Sit and Stand: 2 x 64 x 64 bytes, 8 KB
 
 permissions:
   home_assistant_actions: [cover.open_cover, cover.close_cover, cover.stop_cover, button.press, switch.turn_on]
@@ -21,7 +21,12 @@ tiles:
     name: tile_name
     icon: desk
     sizes: { min: 1x1, max: 2x2 }
-    memory: 4000
+    # The block (value, unit, bar, note) and up to nine keys (block, icon or word, word), with members (texts, layout,
+    # motion); Sit and Stand draw an image of their mask where another key has its icon label, and keep the masks'
+    # descriptors, about 100 bytes more. Not in it: the two masks at their key's size, the side squared in bytes each
+    # (an icon is at most 128 pixels a side). A board with PSRAM keeps the masks there, outside what this number
+    # counts; a board without keeps them inside the chip.
+    memory: 4100
     domains: [cover]
     attributes: [current_position]
     example: tile_example

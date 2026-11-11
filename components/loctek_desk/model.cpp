@@ -129,7 +129,7 @@ Layout lay_out(int w, int h, const Have &have, int gap, int min_key) {
       if (rh >= min_key) break;
       --nrows;
     }
-    // A tile much wider than high that the stacked rule leaves without a row: the wide rule, with the first group.
+    // A tile wider than high that the stacked rule leaves without a row: the wide rule, with the first group.
     if (nrows == 0 && offered > 0 && ng > 0 && w > h) {
       wide = true;
       row_w = (w - gap) / 2;

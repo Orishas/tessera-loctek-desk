@@ -9,6 +9,7 @@ namespace esphome::loctek_desk {
 // tile paints from on_state, Motion and Feedback only.
 class DeskTile : public tessera::Tile {
  public:
+  static constexpr int MASKS = 2;      // SIT and STAND carry a mask of icons.h
   explicit DeskTile(const tessera::Plugin *plugin) : plugin_(plugin) {}
 
   void create(const tessera::TileContext &c) override;
@@ -53,6 +54,10 @@ class DeskTile : public tessera::Tile {
   // Parts.
   lv_obj_t *value_{}, *unit_label_{}, *track_{}, *fill_{}, *note_{};
   lv_obj_t *key_[KEYS]{}, *key_main_[KEYS]{}, *key_word_[KEYS]{};   // by slot
+  bool key_masked_[KEYS]{};            // by slot: key_main_ is an image of a mask, not a label
+  // The masks of SIT and STAND (by Key) at their key's size, made once in create(), and the images' descriptors.
+  tessera::List<uint8_t> mask_[MASKS];
+  lv_image_dsc_t image_[MASKS]{};
 };
 
 }  // namespace esphome::loctek_desk

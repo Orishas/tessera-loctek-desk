@@ -1,6 +1,9 @@
 #include "desk_tile.h"
+#include "icon.h"
+#include "icons.h"
 #include "parts.h"
 #include "esphome/core/hal.h"
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -17,21 +20,24 @@ static constexpr uint32_t ICON_UP = 0xF005D, ICON_DOWN = 0xF0045, ICON_STOP = 0x
 
 // What a key shows and which option names its entity, by Key.
 struct KeyFace {
-  uint32_t icon;        // 0: a word key
+  uint32_t icon;        // an icon of Tessera's set; 0: a mask or a word key
+  const uint8_t *mask;  // an icon of icons.h (ICON_SIZE a side), for the icons Tessera's set lacks; nullptr: none
   const char *word;     // the key of translations/*.json, part screen
   const char *option;   // the tile's option of its entity, nullptr for the cover's own keys
 };
 static const KeyFace FACES[KEYS] = {
-    {0, "sit", "sit"},
-    {0, "stand", "stand"},
-    {ICON_UP, "up", nullptr},
-    {ICON_STOP, "stop", nullptr},
-    {ICON_DOWN, "down", nullptr},
-    {0, "preset_1", "preset_1"},
-    {0, "preset_2", "preset_2"},
-    {ICON_LOCK, "lock", "child_lock"},
-    {ICON_ALARM, "alarm", "alarm"},
+    {0, ICON_SEAT, "sit", "sit"},
+    {0, ICON_HUMAN_HANDSUP, "stand", "stand"},
+    {ICON_UP, nullptr, "up", nullptr},
+    {ICON_STOP, nullptr, "stop", nullptr},
+    {ICON_DOWN, nullptr, "down", nullptr},
+    {0, nullptr, "preset_1", "preset_1"},
+    {0, nullptr, "preset_2", "preset_2"},
+    {ICON_LOCK, nullptr, "lock", "child_lock"},
+    {ICON_ALARM, nullptr, "alarm", "alarm"},
 };
+// Only SIT and STAND have a mask: DeskTile keeps their masks by Key.
+static_assert(int(Key::SIT) < DeskTile::MASKS && int(Key::STAND) < DeskTile::MASKS, "a mask's key");
 
 static tessera::Text copy(const char *s) { return roomy::text(std::string(s ? s : "")); }
 
@@ -66,19 +72,44 @@ void DeskTile::create(const tessera::TileContext &c) {
     lv_obj_set_pos(b, s.r.x, s.r.y);
     lv_obj_set_size(b, s.r.w, s.r.h);
     key_[i] = b;
-    if (f.icon) {
+    if (f.icon || f.mask) {
       const Font font = s.r.h < ui::mm(10) ? Font::ICON_SMALL : Font::ICON;
-      const int ih = ui::line_height(font), wh = ui::line_height(Font::BODY);
+      // A mask is as high as the icon label of that key would be, at most ICON_MOST, which bounds its bytes.
+      const int ih = f.mask ? std::min(ui::line_height(font), ICON_MOST) : ui::line_height(font);
+      const int wh = ui::line_height(Font::BODY);
       const char *word = plugin_->text(f.word);
       // The word under the icon on a high key, where it fits the key's width.
       const bool worded = s.r.h >= ui::mm(14) && ih + pad + wh <= s.r.h &&
                           ui::text_width(word, Font::BODY) <= s.r.w - 2 * pad;
       const int top = worded ? (s.r.h - ih - pad - wh) / 2 : (s.r.h - ih) / 2;
-      key_main_[i] = ui::label(b, font, theme::INK);
-      lv_obj_set_width(key_main_[i], s.r.w);
-      lv_obj_set_style_text_align(key_main_[i], LV_TEXT_ALIGN_CENTER, 0);
-      lv_obj_set_pos(key_main_[i], 0, top);
-      ui::set_text(key_main_[i], ui::icon(f.icon));
+      if (f.mask && ih > 0) {
+        // The mask at the key's size, made once: the size never changes within one object. Painted in the ink.
+        const int m = int(s.key);
+        mask_[m].assign(size_t(ih) * ih, 0);
+        resample(f.mask, ICON_SIZE, ih, mask_[m].data());
+        lv_image_dsc_t &d = image_[m];
+        d = lv_image_dsc_t{};
+        d.header.magic = LV_IMAGE_HEADER_MAGIC;
+        d.header.cf = LV_COLOR_FORMAT_A8;
+        d.header.w = ih;
+        d.header.h = ih;
+        d.header.stride = ih;
+        d.data = mask_[m].data();
+        d.data_size = mask_[m].size();
+        key_main_[i] = lv_image_create(b);
+        lv_obj_set_style_image_recolor_opa(key_main_[i], LV_OPA_COVER, 0);
+        lv_obj_remove_flag(key_main_[i], LV_OBJ_FLAG_CLICKABLE);
+        lv_image_set_src(key_main_[i], &d);
+        lv_obj_set_pos(key_main_[i], (s.r.w - ih) / 2, top);
+        lv_obj_set_size(key_main_[i], ih, ih);
+        key_masked_[i] = true;
+      } else if (f.icon) {
+        key_main_[i] = ui::label(b, font, theme::INK);
+        lv_obj_set_width(key_main_[i], s.r.w);
+        lv_obj_set_style_text_align(key_main_[i], LV_TEXT_ALIGN_CENTER, 0);
+        lv_obj_set_pos(key_main_[i], 0, top);
+        ui::set_text(key_main_[i], ui::icon(f.icon));
+      }
       if (worded) {
         key_word_[i] = ui::label(b, Font::BODY, theme::INK);
         lv_obj_set_width(key_word_[i], s.r.w);
@@ -320,7 +351,9 @@ void DeskTile::paint_key(int slot, Look look) {
     case Look::MUTED: ink = theme::SUBTLE; break;
   }
   ui::set_fill(key_[slot], Tone::NORMAL, ground);
-  ui::set_tone(key_main_[slot], tone, ink);
+  // A mask takes the colour the icon label of that look takes.
+  if (key_masked_[slot]) set_style_color(key_main_[slot], LV_STYLE_IMAGE_RECOLOR, ui::tone_color(tone, ink));
+  else if (key_main_[slot]) ui::set_tone(key_main_[slot], tone, ink);
   if (key_word_[slot]) ui::set_tone(key_word_[slot], tone, ink);
 }
 
