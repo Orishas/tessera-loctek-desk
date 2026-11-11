@@ -45,6 +45,10 @@ the height alone, and a tap sends the desk to the other end, as on 1 x 1.
 
 A key is never squeezed: a row that does not fit a small screen is left out as a whole.
 
+The keys **Sit** and **Stand** carry an icon, a seat (`mdi:seat`) and a person with raised hands
+(`mdi:human-handsup`), as Up, Stop, Down, Lock and Alarm carry theirs; the word is under the icon where the key is
+high enough. The keys 1 and 2 carry their number.
+
 While the desk moves, the height and the **Stop** key turn to the accent colour.
 
 ## Good to know
@@ -61,4 +65,6 @@ While the desk moves, the height and the **Stop** key turn to the accent colour.
   then the tile shows the position in percent. A height in inches is shown in inches; the tile converts nothing.
 - The screen must be allowed to perform Home Assistant actions (Tessera turns it on when it adds the screen).
 - On a Guition 4" turned by **Rotation** with firmware 0.60.0, a tap on a plugin's tile can be lost. Use Rotation 0°.
+- The icons of Sit and Stand are Material Design Icons (Apache 2.0), the ones Home Assistant uses too.
+  `tools/make_icons.py` makes `components/loctek_desk/icons.h` from `tools/svg/`.
 - This plugin is not affiliated with Loctek, Flexispot or the LoctekMotion_IoT project.

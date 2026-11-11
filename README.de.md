@@ -47,6 +47,10 @@ nur die Höhe, und ein Tippen schickt den Tisch ans andere Ende, wie bei 1 x 1.
 
 Eine Taste wird nie gequetscht: Eine Reihe, die auf einen kleinen Screen nicht passt, entfällt ganz.
 
+Die Tasten **Sitzen** und **Stehen** tragen ein Symbol, einen Sitz (`mdi:seat`) und einen Menschen mit erhobenen
+Händen (`mdi:human-handsup`), wie Hoch, Stopp, Runter, Sperre und Alarm ihres tragen; das Wort steht unter dem Symbol,
+wo die Taste hoch genug ist. Die Tasten 1 und 2 tragen ihre Zahl.
+
 Fährt der Tisch, werden die Höhe und die Taste **Stopp** in der Akzentfarbe gezeichnet.
 
 ## Gut zu wissen
@@ -66,4 +70,6 @@ Fährt der Tisch, werden die Höhe und die Taste **Stopp** in der Akzentfarbe ge
 - Der Screen muss Aktionen in Home Assistant ausführen dürfen (Tessera schaltet das ein, wenn es den Screen anlegt).
 - Auf einem Guition 4", der mit **Rotation** gedreht ist, kann mit der Firmware 0.60.0 ein Tippen auf die Kachel eines
   Plugins verloren gehen. Nimm Rotation 0°.
+- Die Symbole von Sitzen und Stehen sind Material Design Icons (Apache 2.0), dieselben, die Home Assistant nutzt.
+  `tools/make_icons.py` macht `components/loctek_desk/icons.h` aus `tools/svg/`.
 - Dieses Plugin steht in keiner Verbindung zu Loctek, Flexispot oder dem Projekt LoctekMotion_IoT.
