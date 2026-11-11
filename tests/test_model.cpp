@@ -1,5 +1,6 @@
 // Host tests of model.h: sh tests/run.sh
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <initializer_list>
@@ -19,7 +20,7 @@ static void test_height_text() {
   assert(height_text("73.50000", t, sizeof t) && !strcmp(t, "73.5"));
   assert(height_text("73,5", t, sizeof t) && !strcmp(t, "73.5"));       // Review Focus 1
   assert(height_text("28.9", t, sizeof t) && !strcmp(t, "28.9"));       // inches: the same rule
-  for (const char *s : {"unavailable", "unknown", "", "abc", "73.5cm"}) {
+  for (const char *s : {"unavailable", "unknown", "", "abc", "73.5cm", "nan", "inf", "-inf", "1e999", "0x10", " 73"}) {
     assert(!height_text(s, t, sizeof t) && t[0] == 0);
   }
 }
@@ -45,6 +46,13 @@ static void test_motion() {
   assert(!m.moving(4500));                 // the same value again is no change
   m.feed(73.0f, 5000);
   assert(m.moving(5000));
+  Motion n;
+  n.feed(73.5f, 1000);
+  n.feed(NAN, 1100);
+  n.feed(INFINITY, 1200);
+  assert(!n.moving(1200));                 // a non-finite value changes nothing
+  n.feed(73.5f, 1300);
+  assert(!n.moving(1300));
 }
 
 int main() {

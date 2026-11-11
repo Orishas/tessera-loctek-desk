@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <cctype>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -16,11 +18,14 @@ bool parse_number(const char *state, float *out) {
   char buf[32];
   if (strlen(state) >= sizeof buf) return false;
   strcpy(buf, state);
-  for (char *p = buf; *p; ++p)
+  if (isspace(static_cast<unsigned char>(buf[0]))) return false;
+  for (char *p = buf; *p; ++p) {
+    if (*p == 'x' || *p == 'X') return false;  // strtof reads hex
     if (*p == ',') *p = '.';
+  }
   char *end = nullptr;
   float v = strtof(buf, &end);
-  if (end == buf || *end != 0) return false;
+  if (end == buf || *end != 0 || !std::isfinite(v)) return false;
   if (out) *out = v;
   return true;
 }
@@ -47,6 +52,7 @@ Block choose_block(bool height_filled, bool height_is_number, bool has_position)
 }
 
 void Motion::feed(float value, uint32_t now_ms) {
+  if (!std::isfinite(value)) return;  // NaN is unequal to everything: it would read as moving on every feed
   if (seen_ && value != last_) {
     changed_ = true;
     changed_ms_ = now_ms;
