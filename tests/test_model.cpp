@@ -13,6 +13,11 @@ static void test_usable() {
   for (const char *s : {"unavailable", "unknown", ""}) assert(!usable(s));
   assert(!usable(nullptr));
 }
+static void test_key_usable() {
+  for (const char *s : {"unknown", "2026-11-01T11:07:37+00:00", "on", "off"}) assert(key_usable(s));
+  for (const char *s : {"unavailable", ""}) assert(!key_usable(s));
+  assert(!key_usable(nullptr));
+}
 static void test_height_text() {
   char t[12];
   assert(height_text("73.5", t, sizeof t) && !strcmp(t, "73.5"));
@@ -113,6 +118,16 @@ static void test_layout_smallest_glass() {                                  // R
   assert(l.block.h >= 56);
   assert(l.count <= 2);                                                     // one row at most fits; never a squeezed key
 }
+static void test_layout_flat_falls_back_to_wide() {      // the CYD's 2x2
+  const Layout l = lay_out(302, 110, all(2, 2), 8, 39);
+  assert(l.count == 2 && find(l, Key::SIT) && find(l, Key::STAND));
+  assert(l.block.x == 0 && l.block.w == 147 && l.block.h == 110 && find(l, Key::SIT)->r.x == 155);
+  inside_and_apart(l, 302, 110, 39);
+}
+static void test_layout_flat_too_narrow() {              // the CYD's 1x2: nothing fits, the tap of a small tile works
+  const Layout l = lay_out(148, 110, all(1, 2), 8, 39);
+  assert(l.count == 0 && l.block.w == 148 && l.block.h == 110);
+}
 static void test_hit() {
   const Layout l = lay_out(408, 408, all(2, 2), 8, 40);
   const Rect r = find(l, Key::STOP)->r;
@@ -160,6 +175,7 @@ static void test_looks() {
 
 int main() {
   test_usable();
+  test_key_usable();
   test_height_text();
   test_position();
   test_block();
@@ -172,6 +188,8 @@ int main() {
   test_layout_large_three_groups();
   test_layout_manual_off_only();
   test_layout_smallest_glass();
+  test_layout_flat_falls_back_to_wide();
+  test_layout_flat_too_narrow();
   test_hit();
   test_services();
   test_small_tap();

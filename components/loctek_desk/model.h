@@ -12,6 +12,8 @@ static constexpr uint32_t MOVING_MS = 2000;
 
 // A state that carries a value: not null, not "", not "unavailable", not "unknown".
 bool usable(const char *state);
+// A key's own entity can take a tap: not null, not "", not "unavailable". A button is "unknown" until it is first pressed.
+bool key_usable(const char *state);
 // The state as a number. A comma counts as a point. False for text that is no number or has anything after it.
 bool parse_number(const char *state, float *out);
 // One decimal, no unit: 73.5 -> "73.5", 114 -> "114.0". False (and out = "") when the state is no number.
@@ -63,8 +65,9 @@ struct Have {
 // The height block and the keys' places inside w x h. min_key is ui::mm(7).
 // Groups {SIT, STAND}, {UP, STOP, DOWN}, {PRESET_1, PRESET_2}, {LOCK, ALARM}; a group without a key does not exist.
 // The size offers rows: 1x1 none, 2x1 one, 1x2 two, 2x2 three (groups 3 and 4 then share one row if all four exist).
-// 2x1: block left, row right, side by side. Else the block on top and the rows under it. A row too low or whose
-// keys would be narrower than min_key is not drawn; with no row the block is the whole tile.
+// 2x1: block left, row right, side by side. Else the block on top and the rows under it; a size that offers rows but
+// gets none that way and is wider than high (the CYD's 2x2) takes the 2x1 rule with the first group. A row too low or
+// whose keys would be narrower than min_key is not drawn; with no row the block is the whole tile.
 Layout lay_out(int w, int h, const Have &have, int gap, int min_key);
 // The key at a point. NONE between keys and on the block.
 Key hit(const Layout &l, int x, int y);

@@ -43,6 +43,8 @@ bool height_text(const char *state, char *out, size_t size) {
   return true;
 }
 
+bool key_usable(const char *state) { return state && *state && strcmp(state, "unavailable") != 0; }
+
 int clamp_position(int position) { return position < 0 ? 0 : position > 100 ? 100 : position; }
 
 Block choose_block(bool height_filled, bool height_is_number, bool has_position) {
@@ -85,7 +87,7 @@ Layout lay_out(int w, int h, const Have &have, int gap, int min_key) {
       if (k != Key::NONE && have.key[int(k)]) r.keys[r.n++] = k;
     if (r.n) groups[ng++] = r;
   }
-  const bool wide = have.columns >= 2 && have.rows < 2;
+  bool wide = have.columns >= 2 && have.rows < 2;
   int offered = have.rows >= 2 ? (have.columns >= 2 ? 3 : 2) : (have.columns >= 2 ? 1 : 0);
   Row rows[4];
   int nrows = 0;
@@ -98,23 +100,36 @@ Layout lay_out(int w, int h, const Have &have, int gap, int min_key) {
   } else {
     for (int i = 0; i < offered && i < ng; ++i) rows[nrows++] = groups[i];
   }
-  const int row_w = wide ? (w - gap) / 2 : w;
-  int kept = 0;
-  for (int i = 0; i < nrows; ++i) {  // a row of too narrow keys is dropped whole
-    const int m = rows[i].n;
-    if ((row_w - (m - 1) * gap) / m >= min_key) rows[kept++] = rows[i];
-  }
-  nrows = kept;
+  int row_w = wide ? (w - gap) / 2 : w;
+  const auto keep_wide_enough = [&]() {  // a row of too narrow keys is dropped whole
+    int kept = 0;
+    for (int i = 0; i < nrows; ++i) {
+      const int m = rows[i].n;
+      if ((row_w - (m - 1) * gap) / m >= min_key) rows[kept++] = rows[i];
+    }
+    nrows = kept;
+  };
+  keep_wide_enough();
   int rh = h;
-  if (wide) {
-    if (nrows > 1) nrows = 1;
-    if (h < min_key) nrows = 0;
-  } else {
+  if (!wide) {
     while (nrows > 0) {
       rh = (h - nrows * gap) / (nrows + 2);
       if (rh >= min_key) break;
       --nrows;
     }
+    // A tile much wider than high that the stacked rule leaves without a row: the wide rule, with the first group.
+    if (nrows == 0 && offered > 0 && ng > 0 && w > h) {
+      wide = true;
+      row_w = (w - gap) / 2;
+      rows[0] = groups[0];
+      nrows = 1;
+      keep_wide_enough();
+      rh = h;
+    }
+  }
+  if (wide) {
+    if (nrows > 1) nrows = 1;
+    if (h < min_key) nrows = 0;
   }
   if (nrows == 0) return l;
   int x0, y0;
