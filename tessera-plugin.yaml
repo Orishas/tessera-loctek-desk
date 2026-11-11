@@ -26,7 +26,7 @@ tiles:
     # descriptors, about 100 bytes more. Not in it: the two masks at their key's size, the side squared in bytes each
     # (an icon is at most 128 pixels a side). A board with PSRAM keeps the masks there, outside what this number
     # counts; a board without keeps them inside the chip.
-    memory: 4100
+    memory: 4300
     domains: [cover]
     attributes: [current_position]
     example: tile_example
