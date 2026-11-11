@@ -7,6 +7,9 @@
     "stand": "Stehen",
     "preset_1": "1",
     "preset_2": "2",
+    "up": "Hoch",
+    "stop": "Stopp",
+    "down": "Runter",
     "lock": "Sperre",
     "alarm": "Alarm"
   },

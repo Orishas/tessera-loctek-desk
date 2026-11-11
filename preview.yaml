@@ -1,4 +1,63 @@
-# What tools/preview.py shows: the data of your tiles on every kind of screen (docs/PREVIEW.md).
+# What tools/preview.py shows (docs/PREVIEW.md of tessera-plugins): the desk at every size, and the cases at the edges.
 tiles:
   - tile: desk
-    name: Desk
+    name: Everything
+    entity: cover.desk
+    options: &all { height: sensor.desk_height, sit: button.desk_sit, stand: button.desk_stand,
+                    preset_1: button.desk_preset_1, preset_2: button.desk_preset_2,
+                    child_lock: switch.desk_child_lock, alarm: button.desk_alarm, manual: true }
+    sizes: [2x2, 2x1, 1x2, 1x1]
+  - tile: desk
+    name: Sit and stand
+    entity: cover.desk
+    options: { height: sensor.desk_height, sit: button.desk_sit, stand: button.desk_stand, manual: false }
+    sizes: [2x1, 2x2]
+  - tile: desk
+    name: Bare
+    entity: cover.desk
+    sizes: [2x2, 1x1]
+  - tile: desk
+    name: Height only
+    entity: cover.desk_low
+    options: { height: sensor.desk_height, manual: false }
+    sizes: [2x2, 1x1]
+  - tile: desk
+    name: Inches
+    entity: cover.desk
+    options: { height: sensor.desk_height_in, sit: button.desk_sit, stand: button.desk_stand }
+    sizes: [2x1]
+  - tile: desk
+    name: Locking
+    entity: cover.desk
+    options: { height: sensor.desk_height, sit: button.desk_sit, stand: button.desk_stand,
+               preset_1: button.desk_preset_1, preset_2: button.desk_preset_2,
+               child_lock: switch.desk_child_lock_on, alarm: button.desk_alarm, manual: true }
+    sizes: [2x2]
+  - tile: desk
+    name: Height gone
+    entity: cover.desk
+    options: { height: sensor.desk_height_gone, sit: button.desk_sit, stand: button.desk_stand }
+    sizes: [2x1]
+  - tile: desk
+    name: Unavailable
+    entity: cover.desk_gone
+    options: *all
+    sizes: [2x2, 1x1]
+  - tile: desk
+    name: No entity
+    sizes: [2x2]
+
+states:
+  cover.desk: { state: open, attributes: { friendly_name: Desk, current_position: 62 } }
+  cover.desk_low: { state: closed, attributes: { friendly_name: Desk, current_position: 0 } }
+  cover.desk_gone: { state: unavailable }
+  sensor.desk_height: { state: "98.4", attributes: { friendly_name: Desk height, unit_of_measurement: cm } }
+  sensor.desk_height_in: { state: "38.7", attributes: { friendly_name: Desk height, unit_of_measurement: in } }
+  sensor.desk_height_gone: { state: unavailable, attributes: { friendly_name: Desk height } }
+  button.desk_sit: { state: unknown, attributes: { friendly_name: Sit } }
+  button.desk_stand: { state: unknown, attributes: { friendly_name: Stand } }
+  button.desk_preset_1: { state: unknown, attributes: { friendly_name: Preset 1 } }
+  button.desk_preset_2: { state: unknown, attributes: { friendly_name: Preset 2 } }
+  button.desk_alarm: { state: unknown, attributes: { friendly_name: Alarm } }
+  switch.desk_child_lock: { state: "off", attributes: { friendly_name: Child lock } }
+  switch.desk_child_lock_on: { state: "on", attributes: { friendly_name: Child lock } }

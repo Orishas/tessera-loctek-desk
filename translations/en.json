@@ -7,6 +7,9 @@
     "stand": "Stand",
     "preset_1": "1",
     "preset_2": "2",
+    "up": "Up",
+    "stop": "Stop",
+    "down": "Down",
     "lock": "Lock",
     "alarm": "Alarm"
   },
