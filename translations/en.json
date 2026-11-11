@@ -19,7 +19,7 @@
     "tile_name": "Desk",
     "tile_example": "73.5 cm, Sit, Stand",
     "height": "Height",
-    "height_hint": "Optional. The sensor Height of the LoctekMotion package. Without it the tile shows the cover's position.",
+    "height_hint": "Optional. The sensor Desk height of the LoctekMotion package. Without it the tile shows the cover's position.",
     "sit": "Sit",
     "sit_hint": "Optional. The button Sit of the LoctekMotion package (Preset 4 on some panels).",
     "stand": "Stand",

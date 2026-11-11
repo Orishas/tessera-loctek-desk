@@ -33,13 +33,13 @@ has, and it draws only those.
 | 1 x 1 | The height alone. A tap sends the desk to the other end: to Stand while it is under 50 %, else to Sit. While the desk moves, a tap stops it. A tap does nothing when the needed key has no entity or the cover gives no position. |
 | 2 x 1 | The height on the left, one row of keys on the right. |
 | 1 x 2 | The height on top, two rows of keys under it. |
-| 2 x 2 | The height on top, three rows of keys under it. |
+| 2 x 2 | The height on top, three rows of keys under it. With all four groups, the presets share the third row with Lock and Alarm. |
 
 The keys come in four groups, in this order: Sit and Stand; Up, Stop and Down; 1 and 2; Lock and Alarm. A group
 without a key does not exist. Each size fills its rows with the groups in that order, and the groups that find no
 row are not drawn.
 
-A tile that is much wider than high, such as a 2 x 2 or 1 x 2 tile on a small screen like the CYD, shows the height on
+A tile that is wider than high, such as a 2 x 2 or 1 x 2 tile on a small screen like the CYD, shows the height on
 the left and one row of keys on the right when no row fits under the height. Where no keys fit at all, the tile shows
 the height alone, and a tap sends the desk to the other end, as on 1 x 1.
 

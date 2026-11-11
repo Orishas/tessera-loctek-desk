@@ -19,7 +19,7 @@
     "tile_name": "Tisch",
     "tile_example": "73,5 cm, Sitzen, Stehen",
     "height": "Höhe",
-    "height_hint": "Optional. Der Sensor Height des LoctekMotion-Pakets. Ohne ihn zeigt die Kachel die Position der Abdeckung.",
+    "height_hint": "Optional. Der Sensor \"Desk height\" des LoctekMotion-Pakets. Ohne ihn zeigt die Kachel die Position der Abdeckung.",
     "sit": "Sitzen",
     "sit_hint": "Optional. Die Taste Sit des LoctekMotion-Pakets (bei manchen Bedienteilen Preset 4).",
     "stand": "Stehen",

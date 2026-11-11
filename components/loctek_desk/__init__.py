@@ -1,4 +1,4 @@
-"""My plugin: the ESPHome side. This file stays this short: smart_display.register_plugin() reads the id, version,
+"""Loctek desk: the ESPHome side. This file stays this short: smart_display.register_plugin() reads the id, version,
 tile memory and the screen's texts from the manifest and translations/ beside this folder (docs/FIRMWARE_API.md)."""
 import esphome.codegen as cg
 import esphome.config_validation as cv

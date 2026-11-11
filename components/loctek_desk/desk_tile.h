@@ -19,12 +19,14 @@ class DeskTile : public tessera::Tile {
 
  private:
   void paint();
-  void paint_block(bool usable, bool moving, const char *note);
+  void paint_block(bool usable, bool moving, bool chosen, const char *note);
   void paint_key(int slot, Look look);
   // The entity a key acts on: the cover for UP, STOP and DOWN, else its option's.
   const tessera::Text &entity_of(Key k) const;
   // Whether a key is drawn usable: the cover usable, and the key's own entity (UP, STOP, DOWN have none).
   bool key_takes(Key k) const;
+  // Whether the desk moves: its values changed lately, or the cover says opening or closing.
+  bool moving(uint32_t now_ms) const { return motion_.moving(now_ms) || cover_moving_; }
 
   const tessera::Plugin *plugin_;
   tessera::Text entity_, name_;
@@ -32,9 +34,10 @@ class DeskTile : public tessera::Tile {
   tessera::Text option_[KEYS];         // a key's own entity, "" for UP, STOP, DOWN and an option not filled in
   Have have_{};
   Layout layout_{};
+  Rect tile_{};                        // the whole tile: the block while no desk is chosen
 
   // From on_state.
-  bool has_state_ = false, cover_usable_ = false, wrong_ = false;
+  bool has_state_ = false, cover_usable_ = false, wrong_ = false, cover_moving_ = false;
   bool has_position_ = false;
   int position_ = 0;
   bool height_filled_ = false, height_number_ = false;
@@ -43,6 +46,8 @@ class DeskTile : public tessera::Tile {
   bool key_ok_[KEYS]{};                // the key's entity is under `entities` and key_usable()
   bool lock_on_ = false;
   Motion motion_;
+  // Which value fed motion_ last: the height or the position. A change of source starts motion_ afresh.
+  enum class Source : uint8_t { NONE, HEIGHT, POSITION } source_ = Source::NONE;
   Feedback feedback_;
 
   // Parts.

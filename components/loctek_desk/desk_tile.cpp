@@ -49,6 +49,7 @@ void DeskTile::create(const tessera::TileContext &c) {
   have_.rows = c.rows;
   // Size and options never change within one object: laid out once.
   layout_ = lay_out(c.width, c.height, have_, ui::px(8), ui::mm(7));
+  tile_ = {0, 0, int(c.width), int(c.height)};
 
   value_ = ui::label(c.parent, Font::DIGITS, theme::INK);
   unit_label_ = ui::label(c.parent, Font::BODY, theme::INK);
@@ -104,11 +105,12 @@ void DeskTile::on_state(JsonObjectConst data) {
   has_state_ = state != nullptr;
   cover_usable_ = usable(state);
   wrong_ = strcmp(data["wait"] | "", "wrong_entity") == 0;
+  cover_moving_ = loctek_desk::cover_moving(state);
 
   JsonVariantConst p = data["attributes"]["current_position"];
   float pos = 0;
   has_position_ = p.is<float>() ? (pos = p.as<float>(), true) : parse_number(p.as<const char *>(), &pos);
-  position_ = has_position_ ? clamp_position(int(pos + 0.5f)) : 0;
+  position_ = has_position_ ? position_of(pos) : 0;
 
   JsonObjectConst e = data["entities"];
   // An option whose entity is not under `entities` counts as not filled in.
@@ -130,9 +132,15 @@ void DeskTile::on_state(JsonObjectConst data) {
   lock_on_ = !option_[int(Key::LOCK)].empty() && strcmp(e["child_lock"]["state"] | "", "on") == 0;
 
   const uint32_t now = esphome::millis();
-  float hv;
-  if (height_number_ && parse_number(hs, &hv)) motion_.feed(hv, now);
-  else if (has_position_) motion_.feed(float(position_), now);
+  float hv = 0;
+  Source source = Source::NONE;
+  if (height_number_ && parse_number(hs, &hv)) source = Source::HEIGHT;
+  else if (has_position_) source = Source::POSITION;
+  if (source != Source::NONE) {
+    if (source != source_) motion_.reset();  // a height and a position are no change of each other
+    source_ = source;
+    motion_.feed(source == Source::HEIGHT ? hv : float(position_), now);
+  }
   paint();
 }
 
@@ -146,10 +154,11 @@ bool DeskTile::key_takes(Key k) const {
 }
 
 void DeskTile::on_tap() {
+  if (wrong_) return;  // muted as the paint shows it
   const tessera::Point p = tessera::tap_point();
   const uint32_t now = esphome::millis();
   const Key k = layout_.count ? hit(layout_, p.x, p.y)
-                              : small_tap(have_, motion_.moving(now), has_position_, position_);
+                              : small_tap(have_, moving(now), has_position_, position_);
   if (k == Key::NONE) return;
   const bool own = FACES[int(k)].option != nullptr;
   if (!may_send(k, cover_usable_, own ? key_ok_[int(k)] : true)) return;
@@ -163,22 +172,25 @@ void DeskTile::on_tap() {
 
 void DeskTile::paint() {
   const uint32_t now = esphome::millis();
-  const bool moving = motion_.moving(now);
+  const bool moves = moving(now);
+  // No entity yet, or one of another domain: the desk icon and the line to choose it, no keys.
+  const bool chosen = has_state_ && !wrong_;
   const char *note = nullptr;
-  if (wrong_ || !has_state_) note = plugin_->text("choose_desk");
+  if (!chosen) note = plugin_->text("choose_desk");
   else if (!cover_usable_) note = plugin_->text("unavailable");
-  paint_block(cover_usable_ && !wrong_, moving, note);
+  paint_block(cover_usable_ && chosen, moves, chosen, note);
   for (int i = 0; i < layout_.count; ++i) {
     const Key k = layout_.slots[i].key;
-    paint_key(i, look_of(k, key_takes(k) && !wrong_, moving, lock_on_, feedback_, now));
+    show(key_[i], chosen);
+    paint_key(i, look_of(k, key_takes(k) && chosen, moves, lock_on_, feedback_, now));
   }
 }
 
 // The height, the position or the desk's icon, centred in the block, and under it the bar or the note.
-void DeskTile::paint_block(bool usable, bool moving, const char *note) {
-  const Rect &b = layout_.block;
+void DeskTile::paint_block(bool usable, bool moving, bool chosen, const char *note) {
+  const Rect &b = chosen ? layout_.block : tile_;  // no keys while no desk is chosen
   const int gap = ui::px(4), bar_h = ui::px(6);
-  const Block kind = choose_block(height_filled_, height_number_, has_position_);
+  const Block kind = chosen ? choose_block(height_filled_, height_number_, has_position_) : Block::ICON;
 
   std::string main, side;
   char pos[8];
@@ -197,14 +209,14 @@ void DeskTile::paint_block(bool usable, bool moving, const char *note) {
       break;
     case Block::ICON:
       main = ui::icon(ICON_DESK);
-      side = roomy::plain(name_);
+      if (chosen) side = roomy::plain(name_);
       break;
   }
   const bool icon = kind == Block::ICON;
 
   // Under it: the note when there is one, else the bar of the position.
   const bool has_note = note != nullptr;
-  const bool bar = !has_note && has_position_;
+  const bool bar = !has_note && has_position_ && chosen;
   const int body_h = ui::line_height(Font::BODY);
   const int note_lines = has_note && ui::text_width(note, Font::BODY) > b.w ? 2 : 1;
   const int foot_h = has_note ? note_lines * body_h : bar ? bar_h : 0;
@@ -250,23 +262,23 @@ void DeskTile::paint_block(bool usable, bool moving, const char *note) {
   show(value_, show_main);
   if (icon) {
     lv_obj_set_width(value_, b.w);
-    lv_obj_set_style_text_align(value_, LV_TEXT_ALIGN_CENTER, 0);
+    set_align(value_, LV_TEXT_ALIGN_CENTER);
     lv_obj_set_pos(value_, b.x, y0);
     lv_obj_set_width(unit_label_, b.w);
-    lv_obj_set_style_text_align(unit_label_, LV_TEXT_ALIGN_CENTER, 0);
+    set_align(unit_label_, LV_TEXT_ALIGN_CENTER);
     lv_obj_set_pos(unit_label_, b.x, y0 + mh + gap);
     show(unit_label_, show_main && name_under);
   } else {
     const int tw = ui::text_width(main, font);
     const int x0 = b.x + (b.w - tw - (side_w ? gap + side_w : 0)) / 2;
     lv_obj_set_width(value_, LV_SIZE_CONTENT);
-    lv_obj_set_style_text_align(value_, LV_TEXT_ALIGN_LEFT, 0);
+    set_align(value_, LV_TEXT_ALIGN_LEFT);
     lv_obj_set_pos(value_, x0, y0);
     // The unit on the value's baseline.
     const lv_font_t *vf = ui::font(font), *uf = ui::font(Font::BODY);
     const int base = vf && uf ? (mh - vf->base_line) - (body_h - uf->base_line) : mh - body_h;
     lv_obj_set_width(unit_label_, LV_SIZE_CONTENT);
-    lv_obj_set_style_text_align(unit_label_, LV_TEXT_ALIGN_LEFT, 0);
+    set_align(unit_label_, LV_TEXT_ALIGN_LEFT);
     lv_obj_set_pos(unit_label_, x0 + tw + gap, y0 + base);
     show(unit_label_, show_main && side_w > 0);
   }

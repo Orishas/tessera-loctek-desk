@@ -13,6 +13,12 @@ inline lv_obj_t *key_block(lv_obj_t *parent) {
   return b;
 }
 
+// The text's alignment, set only when it differs.
+inline void set_align(lv_obj_t *o, lv_text_align_t a) {
+  if (!o || lv_obj_get_style_text_align(o, LV_PART_MAIN) == a) return;
+  lv_obj_set_style_text_align(o, a, 0);
+}
+
 inline void show(lv_obj_t *o, bool on) {
   if (!o || lv_obj_has_flag(o, LV_OBJ_FLAG_HIDDEN) == !on) return;
   if (on) lv_obj_remove_flag(o, LV_OBJ_FLAG_HIDDEN);
