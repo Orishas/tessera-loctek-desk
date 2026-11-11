@@ -1,19 +1,34 @@
 {
   "_meta": { "name": "English" },
   "screen": {
-    "days": "1 day | {n} days",
-    "today": "Today",
-    "passed": "Passed",
-    "no_date": "Choose a date"
+    "choose_desk": "Choose the desk",
+    "unavailable": "Unavailable",
+    "sit": "Sit",
+    "stand": "Stand",
+    "preset_1": "1",
+    "preset_2": "2",
+    "lock": "Lock",
+    "alarm": "Alarm"
   },
   "app": {
-    "name": "Days until",
-    "summary": "Counts the days until a date you choose.",
-    "tile_name": "Days until",
-    "tile_example": "12 days until the holidays",
-    "date": "Date",
-    "date_hint": "As year-month-day, such as 2026-12-25.",
-    "what": "What happens then",
-    "what_hint": "A few words under the number, such as Holidays."
+    "name": "Loctek desk",
+    "summary": "A Loctek Motion or Flexispot desk on the screen: its height, sit, stand, up, down and the presets.",
+    "tile_name": "Desk",
+    "tile_example": "73.5 cm, Sit, Stand",
+    "height": "Height",
+    "height_hint": "Optional. The sensor Height of the LoctekMotion package. Without it the tile shows the cover's position.",
+    "sit": "Sit",
+    "sit_hint": "Optional. The button Sit of the LoctekMotion package (Preset 4 on some panels).",
+    "stand": "Stand",
+    "stand_hint": "Optional. The button Stand of the LoctekMotion package (Preset 3 on some panels).",
+    "preset_1": "Preset 1",
+    "preset_2": "Preset 2",
+    "preset_hint": "Optional. A preset button of the LoctekMotion package.",
+    "child_lock": "Child lock",
+    "child_lock_hint": "Optional. The switch Child lock. The key holds it for five seconds; the desk does not say whether it is locked.",
+    "alarm": "Alarm",
+    "alarm_hint": "Optional. The button or switch that sounds the desk's alarm, if the package has one.",
+    "manual": "Manual keys",
+    "manual_hint": "The keys Up, Stop and Down. A tap starts a travel that runs until Stop or the end."
   }
 }

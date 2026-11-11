@@ -1,33 +1,37 @@
-# The manifest: who made the plugin, what it may do, and what the Tessera app shows. It holds no code and no words:
-# every name, label and hint below is a key into translations/<language>.json, part "app".
-# Every field is explained in docs/MANIFEST.md. Start a plugin of your own with: python3 tools/new_plugin.py <id>
+# Loctek desk: a Loctek Motion or Flexispot desk on the screen, through the entities of the LoctekMotion package.
+# Every field is explained in docs/MANIFEST.md of tessera-plugins.
 id: loctek_desk
 version: 0.1.0
-api: "0.8"
-icon: calendar
-maintainer: your-github-name
+api: "0.24"
+icon: desk
+maintainer: Orishas
 license: MIT
-# beta while it finds its feet, stable once people use it every day, example when it is there to learn from.
 stage: beta
-# What it is about, one or two of: time, weather, calendar, home, energy, travel, money, sports, news, media, photos,
-# fun, voice, tech (docs/MANIFEST.md, "What it is about"). None fits? Ask for a new topic in an issue of the plugins
-# repository.
-topics: [time]
+topics: [home]
 requires:
   esphome: 2026.6.2
 boards: any
-flash_kb: 4
+flash_kb: 20
+
+permissions:
+  home_assistant_actions: [cover.open_cover, cover.close_cover, cover.stop_cover, button.press, switch.turn_on]
 
 tiles:
-  # A tile that counts the days until a date. It draws on the screen alone: no Home Assistant entity, no data from
-  # the internet. To show data from a web service, add a `fetch` and point the tile's `data` at it (docs/FETCH.md).
-  # With data, a `preview` lets the editor draw the tile from it as well (docs/MANIFEST.md, "Tiles").
-  - id: days_until
+  - id: desk
     name: tile_name
-    icon: calendar
-    sizes: { min: 1x1, max: 2x1 }
-    memory: 400
+    icon: desk
+    sizes: { min: 1x1, max: 2x2 }
+    memory: 4200          # counted again in Task 4
+    domains: [cover]
+    attributes: [current_position]
     example: tile_example
+    preview: { title: "{name}", value: "{current_position} %" }
     options:
-      - { id: date, kind: text, label: date, hint: date_hint }
-      - { id: what, kind: text, label: what, hint: what_hint }
+      - { id: height, kind: entity, domains: [sensor], attributes: [unit_of_measurement], label: height, hint: height_hint }
+      - { id: sit, kind: entity, domains: [button], label: sit, hint: sit_hint }
+      - { id: stand, kind: entity, domains: [button], label: stand, hint: stand_hint }
+      - { id: preset_1, kind: entity, domains: [button], label: preset_1, hint: preset_hint }
+      - { id: preset_2, kind: entity, domains: [button], label: preset_2, hint: preset_hint }
+      - { id: child_lock, kind: entity, domains: [switch], label: child_lock, hint: child_lock_hint }
+      - { id: alarm, kind: entity, domains: [button, switch], label: alarm, hint: alarm_hint }
+      - { id: manual, kind: toggle, default: true, label: manual, hint: manual_hint }

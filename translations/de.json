@@ -1,0 +1,34 @@
+{
+  "_meta": { "name": "Deutsch" },
+  "screen": {
+    "choose_desk": "Tisch wählen",
+    "unavailable": "Nicht erreichbar",
+    "sit": "Sitzen",
+    "stand": "Stehen",
+    "preset_1": "1",
+    "preset_2": "2",
+    "lock": "Sperre",
+    "alarm": "Alarm"
+  },
+  "app": {
+    "name": "Loctek-Tisch",
+    "summary": "Ein Loctek-Motion- oder Flexispot-Tisch auf dem Bildschirm: Höhe, Sitzen, Stehen, Hoch, Runter und die Speicherplätze.",
+    "tile_name": "Tisch",
+    "tile_example": "73,5 cm, Sitzen, Stehen",
+    "height": "Höhe",
+    "height_hint": "Optional. Der Sensor Height des LoctekMotion-Pakets. Ohne ihn zeigt die Kachel die Position der Abdeckung.",
+    "sit": "Sitzen",
+    "sit_hint": "Optional. Die Taste Sit des LoctekMotion-Pakets (bei manchen Bedienteilen Preset 4).",
+    "stand": "Stehen",
+    "stand_hint": "Optional. Die Taste Stand des LoctekMotion-Pakets (bei manchen Bedienteilen Preset 3).",
+    "preset_1": "Speicher 1",
+    "preset_2": "Speicher 2",
+    "preset_hint": "Optional. Eine Speichertaste des LoctekMotion-Pakets.",
+    "child_lock": "Kindersicherung",
+    "child_lock_hint": "Optional. Der Schalter Child lock. Die Taste hält ihn fünf Sekunden; der Tisch meldet nicht, ob er gesperrt ist.",
+    "alarm": "Alarm",
+    "alarm_hint": "Optional. Die Taste oder der Schalter, der den Alarm des Tischs auslöst, falls das Paket einen hat.",
+    "manual": "Handtasten",
+    "manual_hint": "Die Tasten Hoch, Stopp und Runter. Ein Tippen startet eine Fahrt, die bis Stopp oder zum Ende läuft."
+  }
+}

@@ -1,21 +1,4 @@
-# What tools/preview.py shows: the data of your tiles on every kind of screen (docs/PREVIEW.md). Every part is
-# optional; without this file each tile type is shown once with its defaults. Never put a secret here.
+# What tools/preview.py shows: the data of your tiles on every kind of screen (docs/PREVIEW.md).
 tiles:
-  - tile: days_until
-    name: Holidays
-    options: { date: "{now+12d}", what: Holidays }   # {now+12d}: twelve days from the moment of the run
-  - tile: days_until
-    name: Today
-    options: { date: "{now}", what: Birthday }
-    sizes: [1x1]
-  - tile: days_until
-    name: No date yet
-    sizes: [2x1]
-
-# answers:   the answer of each fetch by its id, as the web service gives it (docs/PREVIEW.md)
-# states:    entities as Home Assistant has them, for a tile of an entity or a homeassistant sensor of plugin.yaml
-# commands:  answers to the questions of permissions.ha_commands
-# cards:     the entity a card of the manifest opens with
-# pictures:  a file beside this one for each address a tile's places show (plugin API 0.10)
-# savers:    the screensavers to show, each with its options, the data of its step and the file step: shows
-#            (plugin API 0.14, docs/PREVIEW.md "Screensavers")
+  - tile: desk
+    name: Desk
