@@ -20,6 +20,10 @@ bool parse_number(const char *state, float *out);
 bool height_text(const char *state, char *out, size_t size);
 // 0 to 100.
 int clamp_position(int position);
+// A position as Home Assistant sends it, clamped to 0..100 first, then rounded to the nearest: 61.6 -> 62. NaN is 0.
+int position_of(float value);
+// The cover says it moves: "opening" or "closing". The LoctekMotion package never reports them; a changed one may.
+bool cover_moving(const char *state);
 
 // What the height block shows.
 enum class Block { HEIGHT, POSITION, DASH, ICON };
@@ -31,6 +35,8 @@ Block choose_block(bool height_filled, bool height_is_number, bool has_position)
 struct Motion {
   void feed(float value, uint32_t now_ms);
   bool moving(uint32_t now_ms) const;
+  // Forgets the last value: the next feed is a first value, no change (when the source changes, height or position).
+  void reset();
 
  private:
   float last_ = 0;
@@ -74,7 +80,7 @@ Key hit(const Layout &l, int x, int y);
 
 // The action a key sends. entity is the key's own (for ALARM its domain chooses). nullptr for NONE.
 const char *service_of(Key key, const char *entity);
-// A tap on a tile without key rows: STOP while moving; else STAND under 50 %, SIT from 50 %;
+// A tap on a tile without key rows: STOP while moving (always there: its entity is the cover); else STAND under 50 %, SIT from 50 %;
 // NONE without a position or when that key does not exist.
 Key small_tap(const Have &have, bool moving, bool has_position, int position);
 // Whether a tap may send: the cover is usable, and the key's own entity is (UP, STOP, DOWN have none of their own).

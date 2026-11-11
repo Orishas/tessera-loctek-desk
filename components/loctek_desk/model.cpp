@@ -47,6 +47,16 @@ bool key_usable(const char *state) { return state && *state && strcmp(state, "un
 
 int clamp_position(int position) { return position < 0 ? 0 : position > 100 ? 100 : position; }
 
+int position_of(float value) {
+  if (!(value > 0)) return 0;  // also NaN
+  if (value > 100) return 100;
+  return int(value + 0.5f);
+}
+
+bool cover_moving(const char *state) {
+  return state && (strcmp(state, "opening") == 0 || strcmp(state, "closing") == 0);
+}
+
 Block choose_block(bool height_filled, bool height_is_number, bool has_position) {
   if (height_filled && height_is_number) return Block::HEIGHT;
   if (has_position) return Block::POSITION;
@@ -62,6 +72,8 @@ void Motion::feed(float value, uint32_t now_ms) {
   last_ = value;
   seen_ = true;
 }
+
+void Motion::reset() { seen_ = false; }
 
 bool Motion::moving(uint32_t now_ms) const { return changed_ && now_ms - changed_ms_ < MOVING_MS; }
 
@@ -175,10 +187,9 @@ const char *service_of(Key key, const char *entity) {
 }
 
 Key small_tap(const Have &have, bool moving, bool has_position, int position) {
-  Key k;
-  if (moving) k = Key::STOP;
-  else if (!has_position) return Key::NONE;
-  else k = clamp_position(position) < 50 ? Key::STAND : Key::SIT;
+  if (moving) return Key::STOP;  // its entity is the cover, which is always there
+  if (!has_position) return Key::NONE;
+  const Key k = clamp_position(position) < 50 ? Key::STAND : Key::SIT;
   return have.key[int(k)] ? k : Key::NONE;
 }
 

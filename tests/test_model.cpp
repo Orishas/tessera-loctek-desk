@@ -32,6 +32,14 @@ static void test_height_text() {
 static void test_position() {
   assert(clamp_position(-5) == 0 && clamp_position(50) == 50 && clamp_position(140) == 100);
 }
+static void test_position_of() {
+  assert(position_of(-5.2f) == 0 && position_of(61.6f) == 62 && position_of(1e30f) == 100);
+}
+static void test_cover_moving() {
+  assert(cover_moving("opening") && cover_moving("closing"));
+  for (const char *s : {"open", "closed", "unavailable", "unknown", ""}) assert(!cover_moving(s));
+  assert(!cover_moving(nullptr));
+}
 static void test_block() {
   assert(choose_block(true, true, true) == Block::HEIGHT);
   assert(choose_block(true, false, true) == Block::POSITION);   // after the desk's ESP restarted
@@ -58,6 +66,11 @@ static void test_motion() {
   assert(!n.moving(1200));                 // a non-finite value changes nothing
   n.feed(73.5f, 1300);
   assert(!n.moving(1300));
+  Motion r;                                // the source changed from the height to the position
+  r.feed(62.0f, 1000);
+  r.reset();
+  r.feed(98.4f, 1100);
+  assert(!r.moving(1100));
 }
 
 static Have all(int c, int r) { Have h; for (bool &k : h.key) k = true; h.columns = c; h.rows = r; return h; }
@@ -152,6 +165,8 @@ static void test_small_tap() {
   assert(small_tap(h, false, true, 49) == Key::STAND && small_tap(h, false, true, 50) == Key::SIT);
   assert(small_tap(h, false, false, 0) == Key::NONE);
   Have none; assert(small_tap(none, false, true, 10) == Key::NONE);
+  Have two; two.key[int(Key::SIT)] = two.key[int(Key::STAND)] = true;      // manual off: no STOP key, the cover stops
+  assert(small_tap(two, true, true, 60) == Key::STOP);
 }
 static void test_may_send() {                                               // Review Focus 3
   assert(may_send(Key::UP, true, false) && may_send(Key::SIT, true, true));
@@ -178,6 +193,8 @@ int main() {
   test_key_usable();
   test_height_text();
   test_position();
+  test_position_of();
+  test_cover_moving();
   test_block();
   test_motion();
   test_layout_small();
