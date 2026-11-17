@@ -1,8 +1,8 @@
 # Loctek desk: a Loctek Motion or Flexispot desk on the screen, through the entities of the LoctekMotion package.
 # Every field is explained in docs/MANIFEST.md of tessera-plugins.
 id: loctek_desk
-version: 0.1.0
-api: "0.24"
+version: 0.2.0
+api: "0.26"
 icon: desk
 maintainer: Orishas
 license: MIT
@@ -31,12 +31,14 @@ tiles:
     attributes: [current_position]
     example: tile_example
     preview: { title: "{name}", value: "{current_position} %" }
+    # The desk's ESP has all of these: "Fill from a device" takes them from it, each by the end of its entity id.
+    from_device: true
     options:
-      - { id: height, kind: entity, domains: [sensor], attributes: [unit_of_measurement], label: height, hint: height_hint }
-      - { id: sit, kind: entity, domains: [button], label: sit, hint: sit_hint }
-      - { id: stand, kind: entity, domains: [button], label: stand, hint: stand_hint }
-      - { id: preset_1, kind: entity, domains: [button], label: preset_1, hint: preset_hint }
-      - { id: preset_2, kind: entity, domains: [button], label: preset_2, hint: preset_hint }
-      - { id: child_lock, kind: entity, domains: [switch], label: child_lock, hint: child_lock_hint }
-      - { id: alarm, kind: entity, domains: [button, switch], label: alarm, hint: alarm_hint }
+      - { id: height, kind: entity, domains: [sensor], attributes: [unit_of_measurement], device_class: [distance], matches: [desk_height], label: height, hint: height_hint }
+      - { id: sit, kind: entity, domains: [button], matches: [sit], label: sit, hint: sit_hint }
+      - { id: stand, kind: entity, domains: [button], matches: [stand], label: stand, hint: stand_hint }
+      - { id: preset_1, kind: entity, domains: [button], matches: [preset_1], label: preset_1, hint: preset_hint }
+      - { id: preset_2, kind: entity, domains: [button], matches: [preset_2], label: preset_2, hint: preset_hint }
+      - { id: child_lock, kind: entity, domains: [switch], matches: [child_lock], label: child_lock, hint: child_lock_hint }
+      - { id: alarm, kind: entity, domains: [button, switch], matches: [alarm, alarm_off], label: alarm, hint: alarm_hint }
       - { id: manual, kind: toggle, default: true, label: manual, hint: manual_hint }

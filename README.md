@@ -13,7 +13,8 @@ has, and it draws only those.
 2. Add the plugin to a screen. The screen builds once.
 3. In **Layout**, place the **Desk** tile from the library's Plugins group.
 4. In the inspector, choose the desk's cover (the entity **Desk**). Tip: type the desk's name in the list to find it.
-5. Choose what you have. All of it is optional, and the tile leaves out a key whose entity you did not choose:
+5. Choose the desk's ESP under **Fill from a device** to take everything it has at once, or choose what you have
+   one by one. All of it is optional, and the tile leaves out a key whose entity you did not choose:
 
    | Option | Entity of the LoctekMotion package |
    |---|---|
