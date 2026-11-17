@@ -15,7 +15,8 @@ rufen die Speicherplätze auf. Du wählst, welche Tasten die Kachel hat, und sie
 3. Setze im **Layout** die Kachel **Tisch** aus der Gruppe Plugins der Bibliothek.
 4. Wähle im Inspektor die Abdeckung (cover) des Tischs, die Entität **Desk**. Tipp: Tippe den Namen des Tischs in die
    Liste, um sie zu finden.
-5. Wähle, was du hast. Alles ist optional, und die Kachel lässt eine Taste weg, deren Entität du nicht gewählt hast:
+5. Wähle den ESP des Tischs unter **Aus einem Gerät füllen**, um alles auf einmal zu übernehmen, oder wähle
+   einzeln, was du hast. Alles ist optional, und die Kachel lässt eine Taste weg, deren Entität du nicht gewählt hast:
 
    | Option | Entität des LoctekMotion-Pakets |
    |---|---|
