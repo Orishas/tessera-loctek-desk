@@ -30,7 +30,7 @@
     "child_lock": "Kindersicherung",
     "child_lock_hint": "Optional. Der Schalter Child lock. Die Taste hält ihn fünf Sekunden; der Tisch meldet nicht, ob er gesperrt ist.",
     "alarm": "Alarm",
-    "alarm_hint": "Optional. Die Taste oder der Schalter, der den Alarm des Tischs auslöst, falls das Paket einen hat.",
+    "alarm_hint": "Optional. Der Schalter Alarm off oder die Taste Alarm. Die Taste drückt die Alarmtaste des Bedienteils; der Schalter hält sie drei Sekunden lang.",
     "manual": "Handtasten",
     "manual_hint": "Die Tasten Hoch, Stopp und Runter. Ein Tippen startet eine Fahrt, die bis Stopp oder zum Ende läuft."
   }

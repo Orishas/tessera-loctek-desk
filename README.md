@@ -4,10 +4,48 @@ A Loctek Motion or Flexispot desk on the screen. The tile shows the desk's heigh
 send the desk to sitting or standing, move it up or down, stop it and call the presets. You choose which keys the tile
 has, and it draws only those.
 
-> The tile works with the entities of the [LoctekMotion_IoT](https://github.com/iMicknl/LoctekMotion_IoT) package: an
-> ESP32 on the desk's controller, set up in Home Assistant. Set that up first.
+The tile works with the entities of the [LoctekMotion_IoT](https://github.com/iMicknl/LoctekMotion_IoT) package: an ESP32
+on the desk's control box, set up in Home Assistant with ESPHome.
 
 ## Set up
+
+### The desk
+
+Do this first. It is the work of the LoctekMotion_IoT project, and its README is the place to look when something
+differs on your desk.
+
+1. **Check that your desk fits.** It needs a Loctek Motion control box with an RJ45 jack for the control panel:
+   Flexispot desks have one, and so do other brands that use Loctek Motion parts. The project lists the
+   [control panels and desks known to work](https://github.com/iMicknl/LoctekMotion_IoT#supported-control-panels) (the E7 Pro, E7Q, E2Q, E5Q and EC5 among
+   them) and says one wiring should fit every panel with such a jack.
+2. **Get the parts.** An ESP32 board (the package is written for an ESP32 NodeMCU), an Ethernet cable, and an RJ45
+   adapter board with jumper wires if you would rather not cut and solder the cable.
+3. **Wire it** as the project's [pin-out](https://github.com/iMicknl/LoctekMotion_IoT#pin-out) shows: five wires of the cable go to the ESP32, +5V to VIN,
+   GND to GND, TX to GPIO17, RX to GPIO16 and PIN 20 to GPIO23. The desk powers the ESP32. Where the control box has
+   two jacks for a control panel (marked HS), plug the ESP32 into the free one and leave the panel in the other. Never
+   use a motor jack (marked M). A control box with one jack alone needs the project's
+   [pass-through setup](https://github.com/iMicknl/LoctekMotion_IoT#pass-through-configuations) and its other package.
+4. **Flash the ESP32** with ESPHome and the project's
+   [`packages/office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml). Set your Wi-Fi in it, and the
+   pins if you wired others.
+5. **Add it to Home Assistant.** Home Assistant finds the ESP32 by itself: under **Settings > Devices & services**,
+   add it with the **ESPHome** integration.
+
+The device then has these entities, and they are the ones the tile's options take:
+
+| Entity | Kind | In the tile |
+|---|---|---|
+| **Desk** | cover | The tile's entity: the position, and the keys Up, Stop and Down. |
+| **Desk height** | sensor | The option **Height**. |
+| **Sit**, **Stand** | button | The options **Sit** and **Stand**. |
+| **Preset 1**, **Preset 2** | button | The options **Preset 1** and **Preset 2**. |
+| **Child lock** | switch | The option **Child lock**. |
+| **Alarm off** | switch | The option **Alarm**. The package has a button **Alarm** too. |
+
+Move the desk once from Home Assistant before you go on: if the cover **Desk** moves it and **Desk height** shows a
+height, the desk's side is done.
+
+### The tile
 
 1. In Tessera, open **Plugins**, choose **Add with a link** and paste `https://github.com/Orishas/tessera-loctek-desk`.
 2. Add the plugin to a screen. The screen builds once.
@@ -24,7 +62,7 @@ has, and it draws only those.
    | **Preset 1** | The button **Preset 1**. |
    | **Preset 2** | The button **Preset 2**. |
    | **Child lock** | The switch **Child lock**. The tile shows it as the key **Lock**. |
-   | **Alarm** | The button **Alarm**, or the switch **Alarm off** if that is what your package has. |
+   | **Alarm** | The switch **Alarm off**, which holds the control panel's alarm key for three seconds, or the button **Alarm**, which presses it once. |
    | **Manual keys** | On by default. The keys **Up**, **Stop** and **Down**. |
 
 ## Sizes
@@ -53,7 +91,23 @@ high enough. The keys 1 and 2 carry their number.
 
 While the desk moves, the height and the **Stop** key turn to the accent colour.
 
+## Where it was tried
+
+| Screen | How |
+|---|---|
+| Guition 4" (480 x 480) | On the real screen, with a Flexispot desk and the LoctekMotion package. |
+| CYD 2.8" (320 x 240) | In the preview tool only. |
+| Waveshare 4.3" upright (480 x 800) | In the preview tool only. |
+| Guition JC8012P4A1 10.1" (800 x 1280) | In the preview tool only. |
+
+The preview tool is `tools/preview.py` of tessera-plugins: it builds the plugin's code for the screen's size and draws
+every size of the tile, but no finger touches it and no desk moves.
+
 ## Good to know
+
+- The **Alarm** key presses the alarm key of the desk's control panel, the one that belongs to its reminder to stand
+  up. With the switch **Alarm off** the tile holds that key for three seconds, as the package does; with the button
+  **Alarm** it presses it once. What the key does on your desk is in the desk's manual.
 
 - **Up** and **Down** start a travel that runs until you press **Stop**, the other direction, or the end of the range.
   The package enforces the range. A plugin's tile gets taps, not holds, so a key cannot move the desk only while you

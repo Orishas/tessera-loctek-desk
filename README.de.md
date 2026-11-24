@@ -4,10 +4,48 @@ Ein Loctek-Motion- oder Flexispot-Tisch auf dem Bildschirm. Die Kachel zeigt die
 seine Position. Ihre Tasten schicken den Tisch in Sitz- oder Stehhöhe, fahren ihn hoch oder runter, halten ihn an und
 rufen die Speicherplätze auf. Du wählst, welche Tasten die Kachel hat, und sie zeichnet nur diese.
 
-> Die Kachel arbeitet mit den Entitäten des Pakets [LoctekMotion_IoT](https://github.com/iMicknl/LoctekMotion_IoT):
-> ein ESP32 an der Steuerung des Tischs, eingerichtet in Home Assistant. Richte das zuerst ein.
+Die Kachel arbeitet mit den Entitäten des Pakets [LoctekMotion_IoT](https://github.com/iMicknl/LoctekMotion_IoT): ein
+ESP32 an der Steuerbox des Tischs, mit ESPHome in Home Assistant eingerichtet.
 
 ## Einrichten
+
+### Der Tisch
+
+Mach das zuerst. Es ist die Arbeit des Projekts LoctekMotion_IoT, und dessen README hilft weiter, wenn bei deinem
+Tisch etwas anders ist.
+
+1. **Prüfe, ob dein Tisch passt.** Er braucht eine Steuerbox von Loctek Motion mit einer RJ45-Buchse für das
+   Bedienteil: Tische von Flexispot haben eine, ebenso andere Marken mit Teilen von Loctek Motion. Das Projekt führt
+   die [Bedienteile und Tische, die nachweislich gehen](https://github.com/iMicknl/LoctekMotion_IoT#supported-control-panels) (darunter E7 Pro, E7Q, E2Q, E5Q
+   und EC5), und sagt, dass eine Verdrahtung für jedes Bedienteil mit so einer Buchse passen sollte.
+2. **Besorge die Teile.** Ein ESP32-Board (das Paket ist für ein ESP32 NodeMCU geschrieben), ein Netzwerkkabel und
+   eine RJ45-Adapterplatine mit Steckbrücken, wenn du das Kabel nicht aufschneiden und löten willst.
+3. **Verdrahte es**, wie die [Pinbelegung](https://github.com/iMicknl/LoctekMotion_IoT#pin-out) des Projekts zeigt: Fünf Adern des Kabels gehen an den ESP32,
+   +5V an VIN, GND an GND, TX an GPIO17, RX an GPIO16 und PIN 20 an GPIO23. Der Tisch versorgt den ESP32 mit Strom.
+   Hat die Steuerbox zwei Buchsen für ein Bedienteil (beschriftet mit HS), kommt der ESP32 in die freie, und das
+   Bedienteil bleibt in der anderen. Nimm nie eine Motorbuchse (beschriftet mit M). Eine Steuerbox mit nur einer
+   Buchse braucht den [Durchschleif-Aufbau](https://github.com/iMicknl/LoctekMotion_IoT#pass-through-configuations) des Projekts und dessen anderes Paket.
+4. **Flashe den ESP32** mit ESPHome und
+   [`packages/office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) des Projekts. Trage dort dein
+   WLAN ein, und die Pins, falls du andere verdrahtet hast.
+5. **Nimm ihn in Home Assistant auf.** Home Assistant findet den ESP32 von selbst: Füge ihn unter
+   **Einstellungen > Geräte & Dienste** mit der Integration **ESPHome** hinzu.
+
+Das Gerät hat dann diese Entitäten, und genau die nehmen die Optionen der Kachel:
+
+| Entität | Art | In der Kachel |
+|---|---|---|
+| **Desk** | Abdeckung (cover) | Die Entität der Kachel: die Position und die Tasten Hoch, Stopp und Runter. |
+| **Desk height** | Sensor | Die Option **Höhe**. |
+| **Sit**, **Stand** | Taste (button) | Die Optionen **Sitzen** und **Stehen**. |
+| **Preset 1**, **Preset 2** | Taste (button) | Die Optionen **Speicher 1** und **Speicher 2**. |
+| **Child lock** | Schalter (switch) | Die Option **Kindersicherung**. |
+| **Alarm off** | Schalter (switch) | Die Option **Alarm**. Das Paket hat auch eine Taste **Alarm**. |
+
+Fahre den Tisch einmal aus Home Assistant, bevor du weitermachst: Bewegt die Abdeckung **Desk** ihn und zeigt
+**Desk height** eine Höhe, ist die Seite des Tischs fertig.
+
+### Die Kachel
 
 1. Öffne in Tessera **Plugins**, wähle **Mit Link hinzufügen** und füge `https://github.com/Orishas/tessera-loctek-desk`
    ein.
@@ -26,7 +64,7 @@ rufen die Speicherplätze auf. Du wählst, welche Tasten die Kachel hat, und sie
    | **Speicher 1** | Die Taste **Preset 1**. |
    | **Speicher 2** | Die Taste **Preset 2**. |
    | **Kindersicherung** | Der Schalter **Child lock**. Die Kachel zeigt ihn als Taste **Sperre**. |
-   | **Alarm** | Die Taste **Alarm**, oder der Schalter **Alarm off**, wenn dein Paket den hat. |
+   | **Alarm** | Der Schalter **Alarm off**, der die Alarmtaste des Bedienteils drei Sekunden lang hält, oder die Taste **Alarm**, die sie einmal drückt. |
    | **Handtasten** | Standardmäßig an. Die Tasten **Hoch**, **Stopp** und **Runter**. |
 
 ## Größen
@@ -55,7 +93,23 @@ wo die Taste hoch genug ist. Die Tasten 1 und 2 tragen ihre Zahl.
 
 Fährt der Tisch, werden die Höhe und die Taste **Stopp** in der Akzentfarbe gezeichnet.
 
+## Wo es ausprobiert wurde
+
+| Screen | Wie |
+|---|---|
+| Guition 4" (480 x 480) | Auf dem echten Screen, mit einem Flexispot-Tisch und dem LoctekMotion-Paket. |
+| CYD 2,8" (320 x 240) | Nur im Vorschau-Werkzeug. |
+| Waveshare 4,3" hochkant (480 x 800) | Nur im Vorschau-Werkzeug. |
+| Guition JC8012P4A1 10,1" (800 x 1280) | Nur im Vorschau-Werkzeug. |
+
+Das Vorschau-Werkzeug ist `tools/preview.py` von tessera-plugins: Es baut den Code des Plugins für die Größe des
+Screens und zeichnet jede Größe der Kachel, aber kein Finger berührt sie, und kein Tisch fährt.
+
 ## Gut zu wissen
+
+- Die Taste **Alarm** drückt die Alarmtaste am Bedienteil des Tischs, die zu seiner Erinnerung ans Aufstehen gehört.
+  Mit dem Schalter **Alarm off** hält die Kachel diese Taste drei Sekunden lang, wie das Paket es tut; mit der Taste
+  **Alarm** drückt sie sie einmal. Was die Taste an deinem Tisch tut, steht in der Anleitung des Tischs.
 
 - **Hoch** und **Runter** starten eine Fahrt, die läuft, bis du **Stopp** drückst, die andere Richtung wählst oder der
   Fahrbereich zu Ende ist. Den Bereich setzt das Paket durch. Eine Kachel eines Plugins kennt nur das Tippen, kein

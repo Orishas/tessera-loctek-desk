@@ -30,7 +30,7 @@
     "child_lock": "Child lock",
     "child_lock_hint": "Optional. The switch Child lock. The key holds it for five seconds; the desk does not say whether it is locked.",
     "alarm": "Alarm",
-    "alarm_hint": "Optional. The button or switch that sounds the desk's alarm, if the package has one.",
+    "alarm_hint": "Optional. The switch Alarm off, or the button Alarm. The key presses the control panel's alarm key; the switch holds it for three seconds.",
     "manual": "Manual keys",
     "manual_hint": "The keys Up, Stop and Down. A tap starts a travel that runs until Stop or the end."
   }
