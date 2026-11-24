@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 - 2026-11-24
+- Das README sagt, wie die Seite des Tischs eingerichtet wird: welche Tische passen, die Teile, die Verdrahtung, das
+  Paket zum Flashen und die Entitäten, die es liefert. Es sagt auch, auf welchen Screens die Kachel ausprobiert wurde,
+  getrennt nach echtem Screen und Vorschau-Werkzeug.
+- Behoben: Der Hinweis der Option **Alarm** sagte, die Taste löse den Alarm des Tischs aus. Sie drückt die Alarmtaste
+  des Bedienteils, und mit dem Schalter **Alarm off** hält sie sie drei Sekunden lang.
+- Das `memory` der Kachel zählt die Masken von Sitzen und Stehen so, wie ein Board ohne PSRAM sie hält: 7900 Bytes,
+  vorher 4300.
+
 ## 0.2.0 - 2026-11-17
 - Neu: **Aus einem Gerät füllen** über den Optionen. Wähle dort den ESP des Tisches, und die Kachel nimmt seinen
   Höhensensor und seine Tasten Sitzen, Stehen, Preset 1, Preset 2, Kindersicherung und Alarm auf einmal. Die Liste
